@@ -101,7 +101,7 @@ aws-terraform-project2/
     └── screenshots/
 ```
 
-Deployment screenshots will be uploaded separately to the `docs/screenshots/` directory on GitHub.
+Deployment screenshots are available in `docs/screenshots/` directory on GitHub.
 
 Terraform state files, local credentials, and saved plan files are excluded from version control.
 
