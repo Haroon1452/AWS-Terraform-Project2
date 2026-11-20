@@ -40,3 +40,23 @@ credentials
 # IDE files
 .idea/
 .vscode/
+
+
+
+# Terraform local state and provider files
+**/.terraform/
+**/*.tfstate
+**/*.tfstate.*
+**/*.tfplan
+**/tfplan
+**/crash.log
+**/crash.*.log
+**/*.tfvars
+**/*.tfvars.json
+**/override.tf
+**/override.tf.json
+**/*_override.tf
+**/*_override.tf.json
+
+# Local backup files
+README-backup.md
