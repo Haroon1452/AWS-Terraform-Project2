@@ -1,14 +1,26 @@
 
 name: Node.js CI/CD Pipeline
 
+
+
 on:
   push:
     branches: [main]
+    paths:
+      - 'cicd-app/**'
+      - '.github/workflows/ci.yml'
+
   pull_request:
     branches: [main]
+    paths:
+      - 'cicd-app/**'
+      - '.github/workflows/ci.yml'
+
+
 
 permissions:
   contents: read
+  pull-requests: read
   id-token: write
 
 jobs:
@@ -19,14 +31,24 @@ jobs:
       run:
         working-directory: cicd-app
 
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Check for application changes
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            app:
+              - 'cicd-app/**'
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '24'
+
 
       - name: Install dependencies
         run: npm install
@@ -40,19 +62,19 @@ jobs:
 
 
       - name: Configure AWS credentials using OIDC
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && steps.changes.outputs.app == 'true'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::294488969775:role/GitHubActions-ECR-Push-Policy
           aws-region: eu-north-1
 
       - name: Login to Amazon ECR
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && steps.changes.outputs.app == 'true'
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Tag and push Docker image to ECR
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && steps.changes.outputs.app == 'true'
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: aws-cicd-app
